@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Moon, Sun } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useTheme } from "@/hooks/use-theme"
@@ -12,12 +12,27 @@ interface ThemeToggleProps {
 
 export function ThemeToggle({ className }: ThemeToggleProps) {
     const { theme, toggle } = useTheme()
+    const [mounted, setMounted] = useState(false)
+
+    // Prevent hydration mismatch by only rendering after mount
+    useEffect(() => {
+        setMounted(true)
+    }, [])
+
     const isDark = theme === "dark"
 
-    // next-themes
-    // const { resolvedTheme, setTheme } = useTheme()
-    // const isDark = resolvedTheme === "dark"
-    // onClick={() => setTheme(isDark ? "light" : "dark")}
+    // Render placeholder with same dimensions during SSR
+    if (!mounted) {
+        return (
+            <div
+                className={cn(
+                    "flex w-20 h-10 p-1 rounded-full",
+                    "bg-[var(--bg-secondary)] border border-[var(--border-primary)]",
+                    className
+                )}
+            />
+        )
+    }
 
     return (
         <div
